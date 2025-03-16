@@ -1,257 +1,61 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace students
+class Program
 {
-    public class StudentCollection
+    static void Main()
     {
-        class Student
+        List<Product> inventory = new List<Product>
         {
-            public int StudentID { get; set; }
-            public string StudentName { get; set; }
-            public int StudentGroup { get; set; }
-            public string StudentMajor { get; set; }
-            public string StudentFaculty { get; set; }
-            public Student()
-            {
-                StudentID = 0;
-                StudentName = string.Empty;
-                StudentGroup = 0;
-                StudentMajor = string.Empty;
-                StudentFaculty = string.Empty;
-            }
-        }
+            new Product("Laptop", "Electronics", 1200),
+            new Product("Phone", "Electronics", 800),
+            new Product("Desk", "Furniture", 300),
+            new Product("Chair", "Furniture", 150),
+            new Product("Mouse", "Electronics", 50),
+            new Product("Keyboard", "Electronics", 100)
+        };
 
-        private List<Student> Students = new List<Student>();
+        var electronics = inventory.Where(p => p.Category == "Electronics");
+        var firstExpensiveItem = inventory.FirstOrDefault(p => p.Price > 1000);
+        var productNames = inventory.Select(p => p.Name);
 
-        public void AddStudent()
-        {
-            int InputID = default,
-                InputGroup = default;
-            string InputName = string.Empty,
-                   InputMajor = string.Empty,
-                   InputFaculty = string.Empty;
-            Console.WriteLine("Enter student's ID: ");
-            while (!int.TryParse(Console.ReadLine(), out InputID))
-            {
-                Console.WriteLine("Wrong input! Try again");
-            }
-            Console.WriteLine("Enter student's name: ");
-            InputName = Console.ReadLine();
-            Console.WriteLine("Enter student's group number: ");
-            while (!int.TryParse(Console.ReadLine(), out InputGroup))
-            {
-                Console.WriteLine("Wrong input! Try again");
-            }
-            Console.WriteLine("Enter student's major study: ");
-            InputMajor = Console.ReadLine();
-            Console.WriteLine("Enter student's faculty: ");
-            InputFaculty = Console.ReadLine();
+        var sortedByName = inventory.OrderBy(p => p.Name);
+        var sortedByCategoryAndPrice = inventory.OrderBy(p => p.Category).ThenByDescending(p => p.Price);
+        var reversedInventory = inventory.AsEnumerable().Reverse();
 
-            Students.Add(new Student()
-            {
-                StudentID = InputID,
-                StudentName = InputName,
-                StudentGroup = InputGroup,
-                StudentMajor = InputMajor,
-                StudentFaculty = InputFaculty
-            });
-            Console.WriteLine("The student was successfully added!");
-        }
-        public void RemoveStudent()
-        {
-            int SearchIndex;
-            GetStudentList();
-            Console.WriteLine("Enter the index of the student you want to remove: ");
-            while (!int.TryParse(Console.ReadLine(), out SearchIndex))
-            {
-                Console.WriteLine("Wrong input! Try again");
-            }
-            if (SearchIndex > Students.Count)
-                Console.WriteLine("The index doesn't exist");
-            else if (SearchIndex < Students.Count && SearchIndex >= 0)
-            {
-                Students.RemoveAt(SearchIndex);
-                Console.WriteLine("The student was successfully removed!");
-            }
-        }
-        public void UpdateStudent()
-        {
-            int SearchIndex,
-                InputID = default,
-                InputGroup = default;
-            string InputName = string.Empty,
-                   InputMajor = string.Empty,
-                   InputFaculty = string.Empty;
+        var uniqueCategories = inventory.Select(p => p.Category).Distinct();
+        var groupedByCategory = inventory.GroupBy(p => p.Category);
+        var parallelProcessing = inventory.AsParallel().Where(p => p.Price > 100);
 
-            GetStudentList();
-            Console.WriteLine("Enter the index of the student you want to update: ");
-            while (!int.TryParse(Console.ReadLine(), out SearchIndex))
-            {
-                Console.WriteLine("Wrong input! Try again");
-            }
-            if (SearchIndex > Students.Count)
-                Console.WriteLine("The index doesn't exist");
-            else if (SearchIndex < Students.Count && SearchIndex >= 0)
-            {
-                int MenuOption;
-                Console.WriteLine("Select an item to change:");
-                Console.WriteLine("1. Student's ID");
-                Console.WriteLine("2. Student's name");
-                Console.WriteLine("3. Student's group");
-                Console.WriteLine("4. Student's major study");
-                Console.WriteLine("5. Student's group");
-                Console.WriteLine("6. Return to main menu");
-                while (!int.TryParse(Console.ReadLine(), out MenuOption))
-                {
-                    Console.WriteLine("Wrong input!");
-                }
-                switch (MenuOption)
-                {
-                    case 1:
-                        Console.WriteLine("Enter student's ID: ");
-                        while (!int.TryParse(Console.ReadLine(), out InputID))
-                        {
-                            Console.WriteLine("Wrong input! Try again");
-                        }
-                        Students[SearchIndex].StudentID = InputID;
-                        Console.WriteLine("The student's data was successfully updated!");
-                        break;
-                    case 2:
-                        Console.WriteLine("Enter student's name: ");
-                        InputName = Console.ReadLine();
-                        Students[SearchIndex].StudentName = InputName;
-                        Console.WriteLine("The student's data was successfully updated!");
-                        break;
-                    case 3:
-                        Console.WriteLine("Enter student's group number: ");
-                        while (!int.TryParse(Console.ReadLine(), out InputGroup))
-                        {
-                            Console.WriteLine("Wrong input! Try again");
-                        }
-                        Students[SearchIndex].StudentGroup = InputGroup;
-                        Console.WriteLine("The student's data was successfully updated!");
-                        break;
-                    case 4:
-                        Console.WriteLine("Enter student's major study: ");
-                        InputMajor = Console.ReadLine();
-                        Students[SearchIndex].StudentMajor = InputMajor;
-                        Console.WriteLine("The student's data was successfully updated!");
-                        break;
-                    case 5:
-                        Console.WriteLine("Enter student's faculty: ");
-                        InputFaculty = Console.ReadLine();
-                        Students[SearchIndex].StudentFaculty = InputFaculty;
-                        Console.WriteLine("The student's data was successfully updated!");
-                        break;
-                    case 6:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        public void GetStudentData()
-        {
-            int SearchIndex;
-            GetStudentList();
-            Console.WriteLine("Enter the index of the student you want to see: ");
-            while (!int.TryParse(Console.ReadLine(), out SearchIndex))
-            {
-                Console.WriteLine("Wrong input! Try again");
-            }
-            if (SearchIndex > Students.Count)
-                Console.WriteLine("The index doesn't exist");
-            else if (SearchIndex < Students.Count && SearchIndex >= 0)
-            {
-                Console.WriteLine($"ID: {Students[SearchIndex].StudentID}");
-                Console.WriteLine($"Name: {Students[SearchIndex].StudentName}");
-                Console.WriteLine($"Group: {Students[SearchIndex].StudentGroup}");
-                Console.WriteLine($"Major: {Students[SearchIndex].StudentMajor}");
-                Console.WriteLine($"Faculty: {Students[SearchIndex].StudentFaculty}");
-            }
-        }
-        public void GetStudentList()
-        {
-            if (Students.Count == 0)
-            {
-                Console.WriteLine("The list is empty");
-            }
-            else
-            {
-                Console.WriteLine("Index\tID\tName");
-                for (int i = 0; i < Students.Count; i++)
-                {
-                    Console.WriteLine($"{i}\t{Students[i].StudentID}\t{Students[i].StudentName}");
-                }
-            }
-        }
+        Console.WriteLine("Electronics:");
+        foreach (var item in electronics) Console.WriteLine(item);
+
+        Console.WriteLine($"First expensive item: {firstExpensiveItem}");
+
+        Console.WriteLine("Sorted by Name:");
+        foreach (var item in sortedByName) Console.WriteLine(item);
+
+        Console.WriteLine("Sorted by Category and Price:");
+        foreach (var item in sortedByCategoryAndPrice) Console.WriteLine(item);
+
+        Console.WriteLine("Unique Categories:");
+        foreach (var category in uniqueCategories) Console.WriteLine(category);
+    }
+}
+
+class Product
+{
+    public string Name { get; set; }
+    public string Category { get; set; }
+    public double Price { get; set; }
+
+    public Product(string name, string category, double price)
+    {
+        Name = name;
+        Category = category;
+        Price = price;
     }
 
-    internal class Program
-    {
-        enum MenuOptions : byte
-        {
-            View = 1,
-            ViewOne,
-            Add,
-            Remove,
-            Edit,
-            Exit,
-        }
-
-        static StudentCollection StudentList = new StudentCollection();
-
-        static void Menu()
-        {
-            Console.WriteLine("_________________________________");
-            Console.WriteLine("|                               |");
-            Console.WriteLine("| Select an operation:          |");
-            Console.WriteLine("| 1. View the student list      |");
-            Console.WriteLine("| 2. View student info          |");
-            Console.WriteLine("| 3. Add a student              |");
-            Console.WriteLine("| 4. Remove a student           |");
-            Console.WriteLine("| 5. Update an existing student |");
-            Console.WriteLine("| 6. Exit                       |");
-            Console.WriteLine("|_______________________________|");
-
-            Byte MenuOption;
-            while (!Byte.TryParse(Console.ReadLine(), out MenuOption))
-            {
-                Console.WriteLine("Wrong input!");
-            }
-            MenuOptions SelectedOption = (MenuOptions)MenuOption;
-            switch (SelectedOption)
-            {
-                case MenuOptions.View:
-                    StudentList.GetStudentList();
-                    break;
-                case MenuOptions.ViewOne:
-                    StudentList.GetStudentData();
-                    break;
-                case MenuOptions.Add:
-                    StudentList.AddStudent();
-                    break;
-                case MenuOptions.Remove:
-                    StudentList.RemoveStudent();
-                    break;
-                case MenuOptions.Edit:
-                    StudentList.UpdateStudent();
-                    break;
-                case MenuOptions.Exit:
-                    Environment.Exit(0);
-                    break;
-                default:
-                    break;
-            }
-        }
-        static void Main(string[] args)
-        {
-            while (true)
-            {
-                Menu();
-            }
-        }
-    }
+    public override string ToString() => $"{Name} ({Category}) - ${Price}";
 }
